@@ -1,5 +1,7 @@
 package ru.netology;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
@@ -23,20 +25,20 @@ public class Main {
         String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
         String fileName = "data.csv";
 
-       // List<Employee> employees = parseCSV(columnMapping, fileName);
-       // if (employees != null) {
-          //  String json = listToJson(employees);
-            //if (json != null) {
-             //   writeString(json, "data.json");
-           // } else {
-               // System.out.println("Ошибка преобразования списка в JSON");
-           // }
-       // } else {
-           // System.out.println("Ошибка чтения CSV файла");
-      //  }
+        // List<Employee> employees = parseCSV(columnMapping, fileName);
+        //if (employees != null) {
+        //  String json = listToJson(employees);
+        //if (json != null) {
+        //  writeString(json, "data.json");
+        //} else {
+        //System.out.println("Ошибка преобразования списка в JSON");
+        // }
+        //} else {
+        //  System.out.println("Ошибка чтения CSV файла");
+        // }
 
 
-        List<Employee> employees = parseXML("data2.xml");
+        List<Employee> employees = parseXML("data.xml");
         if (employees != null) {
             String json = listToJson(employees);
             if (json != null) {
@@ -51,22 +53,22 @@ public class Main {
 
     }
 
-   // private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
-       // try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
-            //ColumnPositionMappingStrategy<Employee> strategy = new ColumnPositionMappingStrategy<>();
-           // strategy.setType(Employee.class);
-           // strategy.setColumnMapping(columnMapping);
+    private static List<Employee> parseCSV(String[] columnMapping, String fileName) {
+        try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
+            ColumnPositionMappingStrategy<Employee> strategy = new ColumnPositionMappingStrategy<>();
+            strategy.setType(Employee.class);
+            strategy.setColumnMapping(columnMapping);
 
-          //  CsvToBean<Employee> csvToBean = new CsvToBeanBuilder<Employee>(csvReader)
-                   // .withMappingStrategy(strategy)
-                    //.build();
+            CsvToBean<Employee> csvToBean = new CsvToBeanBuilder<Employee>(csvReader)
+                    .withMappingStrategy(strategy)
+                    .build();
 
-          //  return csvToBean.parse();
-       // } catch (IOException e) {
-          //  e.printStackTrace();
-        //}
-      //  return null;
-    //}
+            return csvToBean.parse();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private static List<Employee> parseXML(String fileName) {
         try {
@@ -102,23 +104,8 @@ public class Main {
     }
 
     private static String listToJson(List<Employee> list) {
-        StringBuilder jsonBuilder = new StringBuilder();
-        jsonBuilder.append("[\n");
-        for (Employee employee : list) {
-            jsonBuilder.append("  {\n");
-            jsonBuilder.append("    \"id\": ").append(employee.getId()).append(",\n");
-            jsonBuilder.append("    \"firstName\": \"").append(employee.getFirstName()).append("\",\n");
-            jsonBuilder.append("    \"lastName\": \"").append(employee.getLastName()).append("\",\n");
-            jsonBuilder.append("    \"country\": \"").append(employee.getCountry()).append("\",\n");
-            jsonBuilder.append("    \"age\": ").append(employee.getAge()).append("\n");
-            jsonBuilder.append("  },\n");
-        }
-
-        if (jsonBuilder.length() > 2) {
-            jsonBuilder.delete(jsonBuilder.length() - 2, jsonBuilder.length() - 1);
-        }
-        jsonBuilder.append("\n]");
-        return jsonBuilder.toString();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(list);
     }
 
 
